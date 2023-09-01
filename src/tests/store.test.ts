@@ -19,7 +19,31 @@ function testReducer(state: typeof initialState, action: ActionType) {
 describe('createStore', () => {
   it('It should create a store with a initial state', () => {
     const initialState = 0;
-    const store: Store<number, string> = createStore(testReducer, initialState);
+    const store = createStore(testReducer, initialState);
     expect(store.getState()).toBe(initialState);
+  });
+
+  it('It should allow dispatch and update state', () => {
+    const initialState = 0;
+
+    const { getState, dispatch } = createStore(testReducer, initialState);
+
+    dispatch({ type: 'INCREMENT' });
+    expect(getState()).toBe(1);
+  });
+
+  it('It would allow subscribe and call listeners', () => {
+    const initialState = 10;
+    const { dispatch, subscribe } = createStore(testReducer, initialState);
+    const listener = jest.fn();
+
+    const unsubscribe = subscribe(listener);
+
+    dispatch({ type: 'DECREMENT' });
+    expect(listener).toHaveBeenCalledTimes(1);
+
+    unsubscribe();
+    dispatch({ type: 'DECREMENT' });
+    expect(listener).toHaveBeenCalledTimes(1);
   });
 });
